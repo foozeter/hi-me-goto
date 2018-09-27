@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:backgroundTint="@color/colorPrimary"
-        app:fabAlignmentMode="center" />
+        app:fabAlignmentMode="center"
+        app:navigationIcon="@drawable/round_menu_black_24"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
