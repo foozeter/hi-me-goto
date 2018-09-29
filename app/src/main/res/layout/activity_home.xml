@@ -5,7 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    android:background="#ffffff">
+
+    <!--<include-->
+        <!--layout="@layout/chunk_list_item"/>-->
+
+    <com.hayashihideo.himegoto.AltChipGroup
+        android:id="@+id/chips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/appbar"
@@ -14,7 +24,8 @@
         android:layout_gravity="bottom"
         app:backgroundTint="@color/colorPrimary"
         app:fabAlignmentMode="center"
-        app:navigationIcon="@drawable/round_menu_black_24"/>
+        app:navigationIcon="@drawable/round_menu_grey_24"
+        android:elevation="8dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

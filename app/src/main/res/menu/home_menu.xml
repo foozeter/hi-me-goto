@@ -14,7 +14,7 @@
     <item
         android:id="@+id/tune"
         android:title="tune"
-        android:icon="@drawable/round_tune_black_24"
+        android:icon="@drawable/round_tune_grey_24"
         app:showAsAction="always"
         android:orderInCategory="2"/>
 
