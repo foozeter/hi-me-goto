@@ -17,9 +17,10 @@ class HomeActivity : AppCompatActivity() {
         chips.chipsMarginBottom = 24
         chips.chipsMarginStart = 24
         chips.chipsMarginEnd = 24
-        chips.chipsVerticalSpace = 24
-        chips.chipsHorizontalSpace = 24
-        chips.setLabels(listOf("android",  "iphoneX", "super market fantasy", "ride on shooting star",
+        chips.chipsVerticalGap = 24
+        chips.chipsHorizontalGap = 24
+        chips.restCountBadgeMarginStart = 48
+        chips.addLabels(listOf("android",  "iphoneX", "super market fantasy", "ride on shooting star",
                 "the pillows", "please mr.lostman", "blouse drive monster",
                 "terminal heaven's rock", "xperia"))
     }
