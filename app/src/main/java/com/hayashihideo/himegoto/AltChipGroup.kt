@@ -1,14 +1,11 @@
 package com.hayashihideo.himegoto
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
 import android.support.annotation.AttrRes
 import android.support.annotation.Px
 import android.support.annotation.StyleRes
 import android.support.design.chip.Chip
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -38,7 +35,7 @@ class AltChipGroup(context: Context,
 
     private val chipMeasure = ChipMeasure(owner = this)
 
-    private val chipSpecs = mutableListOf<ChipSpec>()
+    private val chipHolders = mutableListOf<ChipHolder>()
 
     private val roughLayout = RoughLayout()
 
@@ -72,15 +69,15 @@ class AltChipGroup(context: Context,
                         chipLeft = layoutLeft
                         chipTop = layoutTop + line * (chipHeight + chipsVerticalGap)
                     },
-                    onLayoutChip = { position, chipSpec ->
+                    onLayoutChip = { position, holder ->
                         chip = chipsManager.getChipForPositionInLayout(position)
-                        bindChipSpec(chip, chipSpec)
-                        measureChip(chip, chipSpec)
-                        chip.layout(chipLeft, chipTop, chipLeft + chipSpec.width, chipTop + chipSpec.height)
-                        chipLeft += chipSpec.width + chipsHorizontalGap
+                        bindChipSpec(chip, holder)
+                        measureChip(chip, holder)
+                        chip.layout(chipLeft, chipTop, chipLeft + holder.layoutParams.width, chipTop + holder.layoutParams.height)
+                        chipLeft += holder.layoutParams.width + chipsHorizontalGap
                     })
 
-            if (roughLayout.laidOutChipCount < chipSpecs.size) {
+            if (roughLayout.laidOutChipCount < chipHolders.size) {
                 chip = chipsManager.getChipForPositionInLayout(roughLayout.laidOutChipCount - 1)
                 restCountBadge.layout(
                         chip.right + restCountBadgeMarginStart,
@@ -99,16 +96,16 @@ class AltChipGroup(context: Context,
 
         // measure chips
         val chipHeight = chipMeasure.measureHeight()
-        chipSpecs.forEach {
-            it.width = chipMeasure.measureWidth(it.label)
-            it.height = chipHeight
+        chipHolders.forEach {
+            it.layoutParams.width = chipMeasure.measureWidth(it.label)
+            it.layoutParams.height = chipHeight
         }
 
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val availableWidth = width - paddingStart - paddingEnd - chipsMarginStart - chipsMarginEnd
-        val restChips = chipSpecs.toMutableList()
+        val restChips = chipHolders.toMutableList()
         roughLayout.clear()
-        var usedChips = roughLayout.layout(availableWidth, chipsHorizontalGap, chipSpecs)
+        var usedChips = roughLayout.layout(availableWidth, chipsHorizontalGap, chipHolders)
         restChips.removeAll(usedChips)
 
         if (restChips.isNotEmpty()) {
@@ -132,23 +129,27 @@ class AltChipGroup(context: Context,
 
     fun addLabels(labels: List<String>) {
         labels.forEach {
-            chipSpecs.add(ChipSpec(it))
+            chipHolders.add(ChipHolder(it, createEmptyLayoutParams()))
         }
     }
 
-    private fun bindChipSpec(chip: Chip, spec: ChipSpec) {
-        chip.text = spec.label
+    private fun bindChipSpec(chip: Chip, holder: ChipHolder) {
+        chip.text = holder.label
     }
 
-    private fun measureChip(chip: Chip, spec: ChipSpec) {
-        chip.measure(MeasureSpec.makeMeasureSpec(spec.width, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(spec.height, MeasureSpec.EXACTLY))
+    private fun measureChip(chip: Chip, holder: ChipHolder) {
+        chip.measure(MeasureSpec.makeMeasureSpec(holder.layoutParams.width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(holder.layoutParams.height, MeasureSpec.EXACTLY))
     }
 
     private fun inflateRestCountBadge(): TextView = LayoutInflater.from(context)
                     .inflate(R.layout.alt_chip_group_rest_count_badge, this, false) as TextView
+    
+    private fun createEmptyLayoutParams() = ViewGroup.LayoutParams(0, 0)
 
-    private data class ChipSpec(var label: String, var width: Int = 0, var height: Int = 0)
+    private data class ChipHolder(var label: String,
+                                  var layoutParams: LayoutParams,
+                                  var isLaidOut: Boolean = false)
 
     private class RoughLayout {
 
@@ -162,10 +163,10 @@ class AltChipGroup(context: Context,
         var laidOutChipCount = 0
             private set
 
-        private val lines = mutableListOf<MutableList<ChipSpec>>()
+        private val lines = mutableListOf<MutableList<ChipHolder>>()
         private var currentLine = INVALID_LINE
 
-        fun layout(width: Int, gap: Int, chips: List<ChipSpec>): List<ChipSpec> {
+        fun layout(width: Int, gap: Int, chips: List<ChipHolder>): List<ChipHolder> {
             clear()
             val laidOutChips = if (width == UNSPECIFIED) {
                 layoutAllChipsInSingleLine(gap, chips)
@@ -176,7 +177,7 @@ class AltChipGroup(context: Context,
             return laidOutChips
         }
 
-        fun layoutInNewLine(width: Int, gap: Int, chips: List<ChipSpec>): List<ChipSpec> {
+        fun layoutInNewLine(width: Int, gap: Int, chips: List<ChipHolder>): List<ChipHolder> {
             val laidOutChips = if (width == UNSPECIFIED) {
                 layoutAllChipsInSingleLine(gap, chips)
             } else {
@@ -186,14 +187,14 @@ class AltChipGroup(context: Context,
             return laidOutChips
         }
 
-        private fun layoutAllChipsInSingleLine(gap: Int, chips: List<ChipSpec>): List<ChipSpec> {
+        private fun layoutAllChipsInSingleLine(gap: Int, chips: List<ChipHolder>): List<ChipHolder> {
             TODO("NOT IMPLEMENTED")
         }
 
-        private fun layoutDefault(width: Int, gap: Int, chips: List<ChipSpec>): List<ChipSpec> {
+        private fun layoutDefault(width: Int, gap: Int, chips: List<ChipHolder>): List<ChipHolder> {
             val restChips = chips.toMutableList()
-            val totalUsedChips = mutableListOf<ChipSpec>()
-            var usedChips: List<ChipSpec>
+            val totalUsedChips = mutableListOf<ChipHolder>()
+            var usedChips: List<ChipHolder>
             val noLimitLines = maxLines == UNSPECIFIED
             while (restChips.isNotEmpty() && (noLimitLines || lines() < maxLines)) {
                 usedChips = fillUpNewLine(width, gap, restChips)
@@ -204,15 +205,15 @@ class AltChipGroup(context: Context,
         }
 
         // try to fill a line with some of the passed chips and no space left
-        private fun fillUpNewLine(width: Int, gap: Int, chips: List<ChipSpec>): List<ChipSpec> {
+        private fun fillUpNewLine(width: Int, gap: Int, chips: List<ChipHolder>): List<ChipHolder> {
             newLine()
-            val usedChips = mutableListOf<ChipSpec>()
+            val usedChips = mutableListOf<ChipHolder>()
             var restWidth = width + gap
             var i = 0
             while (i < chips.size && 0 < restWidth) {
                 val chip = chips[i]
-                if (gap + chip.width < restWidth) {
-                    restWidth -= gap + chip.width
+                if (gap + chip.layoutParams.width < restWidth) {
+                    restWidth -= gap + chip.layoutParams.width
                     lines[currentLine].add(chip)
                     usedChips.add(chip)
                 }
@@ -228,7 +229,7 @@ class AltChipGroup(context: Context,
             lines.add(mutableListOf())
         }
 
-        fun deleteLastLine(): List<ChipSpec>? {
+        fun deleteLastLine(): List<ChipHolder>? {
             if (lines.isNotEmpty()) {
                 val ret = lines.removeAt(lines.size - 1)
                 laidOutChipCount -= ret.size
@@ -247,7 +248,7 @@ class AltChipGroup(context: Context,
         }
 
         fun iterateInLayout(onNewLineBegin: (line: Int) -> Unit,
-                            onLayoutChip: (position: Int, spec: ChipSpec) -> Unit) {
+                            onLayoutChip: (position: Int, holder: ChipHolder) -> Unit) {
 
             var position = 0
             lines.forEachIndexed { line, specs ->
