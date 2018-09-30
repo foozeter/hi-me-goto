@@ -31,52 +31,12 @@
 
     </LinearLayout>
 
-    <android.support.design.chip.Chip
-        android:id="@+id/chip1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="android studio"
-        android:layout_below="@+id/symbol_and_title"
-        android:layout_marginTop="24dp"/>
 
-    <android.support.design.chip.Chip
-        android:id="@+id/chip2"
-        android:layout_width="wrap_content"
+    <com.hayashihideo.himegoto.AltChipGroup
+        android:id="@+id/chip_group"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="super market fantasy"
-        android:layout_alignTop="@id/chip1"
-        android:layout_toEndOf="@+id/chip1"
-        android:layout_marginStart="8dp"/>
-
-    <android.support.design.chip.Chip
-        android:id="@+id/chip3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="terminal heven's rock"
-        android:layout_below="@+id/chip1"
-        android:layout_marginTop="8dp"/>
-
-    <android.support.design.chip.Chip
-        android:id="@+id/chip4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="the pillows"
-        android:layout_alignTop="@id/chip3"
-        android:layout_toEndOf="@id/chip3"
-        android:layout_marginStart="8dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="+4"
-        android:textSize="16sp"
-        android:typeface="monospace"
-        android:textStyle="bold"
-        android:layout_alignTop="@id/chip4"
-        android:layout_toEndOf="@id/chip4"
-        android:layout_alignBottom="@id/chip4"
-        android:gravity="center_vertical"
-        android:layout_marginStart="16dp"/>
+        android:layout_below="@+id/symbol_and_title" />
 
 
 </RelativeLayout>

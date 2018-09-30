@@ -8,14 +8,15 @@
     tools:context=".HomeActivity"
     android:background="#ffffff">
 
-    <!--<include-->
-        <!--layout="@layout/chunk_list_item"/>-->
-
-    <com.hayashihideo.himegoto.AltChipGroup
-        android:id="@+id/chips"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="match_parent"/>
+<!---->
+    <!--<com.hayashihideo.himegoto.AltChipGroup-->
+        <!--android:id="@+id/chip_group"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"/>-->
 
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/appbar"
