@@ -32,7 +32,7 @@
     </LinearLayout>
 
 
-    <com.hayashihideo.himegoto.AltChipGroup
+    <com.hayashihideo.himegoto.CompactChipGroup
         android:id="@+id/chip_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

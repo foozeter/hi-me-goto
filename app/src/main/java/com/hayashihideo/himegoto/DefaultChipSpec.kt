@@ -1,6 +1,6 @@
 package com.hayashihideo.himegoto
 
-class DefaultChipSpec(private var label: String): AltChipGroup.ChipSpec {
+class DefaultChipSpec(private var label: String): CompactChipGroup.ChipSpec {
 
     override fun getLabel() = label
 

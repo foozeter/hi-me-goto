@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -22,7 +21,7 @@ class HomeActivity : AppCompatActivity() {
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = Ad()
 //
-//        val specs = mutableListOf<AltChipGroup.ChipSpec>()
+//        val specs = mutableListOf<CompactChipGroup.ChipSpec>()
 //        for (i in 0 until data.size) {
 //            specs.add(DefaultChipSpec(data[i]))
 //        }
@@ -68,13 +67,13 @@ private val data = listOf(
 
 private class Ad: RecyclerView.Adapter<Vh>() {
 
-    val specs = mutableListOf<List<AltChipGroup.ChipSpec>>()
+    val specs = mutableListOf<List<CompactChipGroup.ChipSpec>>()
 
     init {
         for (i in 1..50) {
             val range = (0..10).random()
             val start = (0..(data.size-range)).random()
-            val list = mutableListOf<AltChipGroup.ChipSpec>()
+            val list = mutableListOf<CompactChipGroup.ChipSpec>()
             specs.add(list)
             for (j in start until (start+range)) {
                 list.add(DefaultChipSpec(data[j]))
@@ -99,7 +98,7 @@ private class Ad: RecyclerView.Adapter<Vh>() {
 }
 
 private class Vh(view: View): RecyclerView.ViewHolder(view) {
-    val chipGroup: AltChipGroup = view.findViewById(R.id.chip_group)
+    val chipGroup: CompactChipGroup = view.findViewById(R.id.chip_group)
     init {
         chipGroup.maxLines = 2
     }

@@ -6,16 +6,15 @@ import android.support.annotation.Px
 import android.support.annotation.StyleRes
 import android.support.design.chip.Chip
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-class AltChipGroup(context: Context,
-                   attrs: AttributeSet?,
-                   @AttrRes defStyleAttr: Int,
-                   @StyleRes defStyleRes: Int)
+class CompactChipGroup(context: Context,
+                       attrs: AttributeSet?,
+                       @AttrRes defStyleAttr: Int,
+                       @StyleRes defStyleRes: Int)
     : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
     var maxLines = RoughLayout.UNSPECIFIED
@@ -299,12 +298,12 @@ class AltChipGroup(context: Context,
                 getChipHolderForPosition(laidOutChipCount - 1)
     }
 
-    private class ChipMeasure(owner: AltChipGroup) {
+    private class ChipMeasure(owner: CompactChipGroup) {
 
         private var isDirty = true
 
         private val chip = LayoutInflater.from(owner.context)
-                .inflate(R.layout.alt_chip_group_default_chip, owner, false) as Chip
+                .inflate(R.layout.compact_chip_group_default_chip, owner, false) as Chip
 
         fun measureHeight(): Int {
             measure()
@@ -336,7 +335,7 @@ class AltChipGroup(context: Context,
         }
     }
 
-    private class ChipsManager(val owner: AltChipGroup) {
+    private class ChipsManager(val owner: CompactChipGroup) {
 
         private val laidOutChips = mutableListOf<Chip>()
         private val stockedChips = mutableListOf<Chip>()
@@ -372,7 +371,7 @@ class AltChipGroup(context: Context,
 
         private fun inflateChip(): Chip
                 = LayoutInflater.from(owner.context).inflate(
-                R.layout.alt_chip_group_default_chip, owner, false) as Chip
+                R.layout.compact_chip_group_default_chip, owner, false) as Chip
 
         private fun <T> MutableList<T>.popTail() =
                 if (isEmpty()) null else removeAt(size - 1)
