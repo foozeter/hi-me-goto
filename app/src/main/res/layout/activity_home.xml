@@ -8,15 +8,17 @@
     tools:context=".HomeActivity"
     android:background="#ffffff">
 
-    <android.support.v7.widget.RecyclerView
+    <com.hayashihideo.himegoto.compactchipgroup.recyclerview.RecyclerViewWithCCG
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-<!---->
-    <!--<com.hayashihideo.himegoto.CompactChipGrouproup-->
+
+    <!--<com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup-->
         <!--android:id="@+id/chip_group"-->
         <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"/>-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="16dp"-->
+        <!--android:layout_marginEnd="16dp"/>-->
 
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/appbar"
@@ -33,5 +35,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/appbar"/>
+
+    <!--<Button-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="next >>>"-->
+        <!--android:layout_gravity="center"/>-->
 
 </android.support.design.widget.CoordinatorLayout>
