@@ -1,8 +1,6 @@
 package com.hayashihideo.himegoto.compactchipgroup.internal
 
-import android.support.annotation.Px
 import android.support.design.chip.Chip
-import android.util.Log
 import android.view.View
 import com.hayashihideo.himegoto.compactchipgroup.ChipHolder
 import com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup
@@ -11,12 +9,6 @@ internal class ChipsManager(
         private val owner: CompactChipGroup, pool: ChipsPool)
     : LocalChipsPool, ChipsLayoutManager {
 
-    @Px var chipsVerticalGap = 0
-        set(value) { field = Math.max(0, value) }
-
-    @Px var chipsHorizontalGap = 0
-        set(value) { field = Math.max(0, value) }
-
     override var chipsPool = pool.apply { register(this@ChipsManager) }
         set(newPool) {
             field.unregister(this)
@@ -24,14 +16,35 @@ internal class ChipsManager(
             field = newPool
         }
 
+    override var verticalGap
+        get() = layoutSpec.verticalGap
+        set(value) { layoutSpec.verticalGap = Math.max(0, value) }
+
+    override var horizontalGap
+        get() = layoutSpec.horizontalGap
+        set(value) { layoutSpec.horizontalGap = Math.max(0, value) }
+
+    override var maxLines
+        get() = layoutSpec.maxLines
+        set(value) { layoutSpec.maxLines = value }
+
+    override val lineCount: Int
+        get() = roughLayout.lineCount
+
+    override val laidOutChipCount: Int
+        get() = roughLayout.chipCount
+
     private val dirtyChips = mutableListOf<MutablePair>()
     private val scrappedChips = mutableListOf<MutablePair>()
+    private val roughLayout = RoughLayout()
+    private val layoutSpec = LayoutSpec()
     private var cacheSizeChangeListener: LocalChipsPool.LocalCacheSizeChangeListener? = null
+    private var layoutMethod = CrammingLayoutMethod()
 
-    val lastPosition: Int
+    override val lastPosition: Int
         get() = if (dirtyChips.isEmpty()) Constant.INVALID_POSITION else dirtyChips.lastIndex
 
-    override fun layout(roughLayout: RoughLayout, left: Int, top: Int) {
+    override fun layout(left: Int, top: Int) {
         var chipLeft = 0
         var chipTop = 0
         prepareForLayout(roughLayout)
@@ -39,11 +52,18 @@ internal class ChipsManager(
             val chip = dirtyChips[position].chip
             if (lineChanged) {
                 chipLeft = left
-                chipTop = top + line * (chip.measuredHeight + chipsVerticalGap)
+                chipTop = top + line * (chip.measuredHeight + verticalGap)
             }
             chip.layout(chipLeft, chipTop, chipLeft + chip.measuredWidth, chipTop + chip.measuredHeight)
-            chipLeft += chip.width + chipsHorizontalGap
+            chipLeft += chip.width + horizontalGap
         }
+    }
+
+    override fun layoutRoughly(width: Int, maxBadgeBounds: Int, chips: List<ChipHolder>) {
+        layoutSpec.width = width
+        layoutSpec.maxBadgeBounds = maxBadgeBounds
+        roughLayout.clear()
+        layoutMethod.invoke(chips, roughLayout, layoutSpec)
     }
 
     private fun prepareForLayout(roughLayout: RoughLayout) {
@@ -102,7 +122,7 @@ internal class ChipsManager(
         cacheSizeChangeListener = null
     }
 
-    fun getChipForPosition(pos: Int) = dirtyChips[pos].chip
+    override fun getChipForPosition(position: Int) = dirtyChips[position].chip
 
     override fun obtainCleanChip(): Chip? {
         val pair = scrappedChips.popLastOrNull()

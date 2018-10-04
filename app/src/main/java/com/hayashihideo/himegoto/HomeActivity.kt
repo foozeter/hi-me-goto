@@ -141,21 +141,11 @@ private class Vh(view: View): RecyclerView.ViewHolder(view), CCGHolder {
 
     init {
         chipGroup.maxLines = 2
+        chipGroup.horizontalGap =  24
+        chipGroup.verticalGap = 24
+        chipGroup.chipsMarginTop = 24
+        chipGroup.chipsMarginBottom = 24
+        chipGroup.chipsMarginStart = 24
+        chipGroup.restCountBadgeMarginStart = 36
     }
 }
-
-//fun test(context: Context) {
-//    val pool = ChipsPool(context)
-//    val m_a_1 = ChipsManager()
-//    val m_a_2 = m_a_1
-//    val m_b = ChipsManager()
-//    Log.d("mylog", "pool.register(m_a_1) == ${pool.register(m_a_1)} (expected 'true')")
-//    Log.d("mylog", "pool.register(m_a_1) == ${pool.register(m_a_1)} (expected 'false')")
-//    Log.d("mylog", "pool.register(m_a_2) == ${pool.register(m_a_2)} (expected 'false')")
-//    Log.d("mylog", "pool.register(m_b) == ${pool.register(m_b)} (expected 'true')")
-//
-//    Log.d("mylog", "pool.unregister(m_a_1) == ${pool.unregister(m_a_1)} (expected 'true')")
-//    Log.d("mylog", "pool.unregister(m_b) == ${pool.unregister(m_b)} (expected 'true')")
-//    Log.d("mylog", "pool.unregister(m_b) == ${pool.unregister(m_b)} (expected 'false')")
-//    Log.d("mylog", "pool.unregister(m_a_2) == ${pool.unregister(m_a_2)} (expected 'false')")
-//}
