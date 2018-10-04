@@ -147,7 +147,7 @@ class CompactChipGroup(context: Context,
 
             val chipHeight = chipMeasure.measureHeight()
             chipHolders.forEach {
-                it.layoutParams.width = chipMeasure.measureWidth(it.getLabel())
+                it.layoutParams.width = chipMeasure.measureWidth(it.label)
                 it.layoutParams.height = chipHeight
             }
 

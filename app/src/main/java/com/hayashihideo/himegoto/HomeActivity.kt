@@ -26,12 +26,12 @@ class HomeActivity : AppCompatActivity() {
 
 //        val holders = mutableListOf<ChipHolder>()
 //        for (i in 0 until data.size) {
-//            holders.add(Ch(data[i]))
+//            holders.add(ChipHolder(data[i]))
 //        }
 
 //        val holders = mutableListOf<ChipHolder>()
 //        val labels = listOf("i know you", "kind of love", "love", "verses")
-//        labels.forEach { holders.add(Ch(it)) }
+//        labels.forEach { holders.add(ChipHolder(it)) }
 
 
 
@@ -45,7 +45,7 @@ class HomeActivity : AppCompatActivity() {
 //            val list = mutableListOf<ChipHolder>()
 //            holders.add(list)
 //            for (j in start until (start+range)) {
-//                list.add(Ch(data[j]))
+//                list.add(ChipHolder(data[j]))
 //            }
 //        }
 //
@@ -111,7 +111,7 @@ private class Ad: AdapterWithCCG<Vh>() {
             val list = mutableListOf<ChipHolder>()
             holders.add(list)
             for (j in start until (start+range)) {
-                list.add(Ch(data[j]))
+                list.add(ChipHolder(data[j]))
             }
         }
     }
@@ -142,10 +142,6 @@ private class Vh(view: View): RecyclerView.ViewHolder(view), CCGHolder {
     init {
         chipGroup.maxLines = 2
     }
-}
-
-private class Ch(private val label: String): ChipHolder() {
-    override fun getLabel(): String = label
 }
 
 //fun test(context: Context) {
