@@ -166,45 +166,11 @@ class CompactChipGroup(context: Context,
             val maxLayoutWidthSpecified = -1 < maxLayoutWidth
             val maxLayoutHeightSpecified = -1 < maxLayoutHeight
 
-//            var width: Int
-//            val widthSpecified: Boolean
-//            when (MeasureSpec.getMode(widthMeasureSpec)) {
-//                MeasureSpec.EXACTLY, MeasureSpec.AT_MOST -> {
-//                    width = MeasureSpec.getSize(widthMeasureSpec)
-//                    widthSpecified = true
-//                }
-//                MeasureSpec.UNSPECIFIED -> {
-//                    width = 0
-//                    widthSpecified = false
-//                }
-//                else -> throw IllegalArgumentException()
-//            }
-//
-//            var height: Int
-//            val heightSpecified: Boolean
-//            when (MeasureSpec.getMode(heightMeasureSpec)) {
-//                MeasureSpec.EXACTLY, MeasureSpec.AT_MOST -> {
-//                    height = MeasureSpec.getSize(heightMeasureSpec)
-//                    heightSpecified = true
-//                }
-//                MeasureSpec.UNSPECIFIED -> {
-//                    height = 0
-//                    heightSpecified = false
-//                }
-//                else -> throw IllegalArgumentException()
-//            }
-
             val chipHeight = chipMeasure.measureHeight()
             chipHolders.forEach {
                 it.layoutParams.width = chipMeasure.measureWidth(it.label)
                 it.layoutParams.height = chipHeight
             }
-
-//            val layoutWidth = if (!widthSpecified) 0
-//            else width - paddingStart - paddingEnd - chipsMarginStart - chipsMarginEnd
-//
-//            val layoutHeight = if (!heightSpecified) 0
-//            else height - paddingTop - paddingBottom - chipsMarginTop - chipsMarginBottom
 
             // measure the max maxWidth of the badge temporarily
             setRestCount(chipHolders.size)
@@ -260,14 +226,5 @@ class CompactChipGroup(context: Context,
         measureCached = false
         layoutRequested = true
         super.requestLayout()
-    }
-
-    fun toStrFromMode(mode: Int): String {
-        return when(mode) {
-            MeasureSpec.AT_MOST -> "AT-MOST"
-            MeasureSpec.EXACTLY -> "EXACTLY"
-            MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
-            else -> "*unknown*"
-        }
     }
 }
