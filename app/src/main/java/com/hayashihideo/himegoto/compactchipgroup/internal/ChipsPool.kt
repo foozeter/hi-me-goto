@@ -30,7 +30,7 @@ internal class ChipsPool(val context: Context)
             val chip = pool.obtainCleanChip()
             if (chip != null) return chip
         }
-        return newChip()
+        return ChipFactory.create(context)
     }
 
     fun register(pool: LocalChipsPool): Boolean {
@@ -82,15 +82,6 @@ internal class ChipsPool(val context: Context)
 
     private fun isSameReference(m1: LocalChipsPool, m2: LocalChipsPool)
             = m1 === m2
-
-    private fun newChip(): Chip {
-        val chip = Chip(context)
-        chip.layoutParams = emptyLayoutParams()
-        return chip
-    }
-
-    private fun emptyLayoutParams()
-            = ViewGroup.LayoutParams(0, 0)
 
     private fun <T> MutableList<T>.popLast()
             = removeAt(size - 1)

@@ -8,6 +8,7 @@ import android.view.ViewGroup
  */
 open class ChipHolder(var label: String) {
 
+    // todo; delete this property.
     internal val layoutParams = ViewGroup.LayoutParams(0, 0)
 
     open fun bind(chip: Chip) {

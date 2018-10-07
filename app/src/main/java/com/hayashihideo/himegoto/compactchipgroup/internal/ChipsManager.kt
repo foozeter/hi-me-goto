@@ -87,7 +87,7 @@ internal class ChipsManager(
                 var pair = scrappedChips.popLastOrNull()
                 if (pair == null) {
                     val chip = chipsPool.obtainCleanChip()
-                    owner.addChipInLayout(chip, holder.layoutParams, preventRequestLayout = true)
+                    owner.addChipInLayout(chip, chip.layoutParams, preventRequestLayout = true)
                     pair = MutablePair(holder, chip)
                 } else {
                     pair.holder = holder
@@ -151,8 +151,6 @@ internal class ChipsManager(
     private fun loop(count: Int, process: () -> Unit) {
         for (n in 1..count) process()
     }
-
-    private fun max(a: Int, b: Int, c: Int) = Math.max(Math.max(a, b), c)
 
     private fun <T> MutableList<T>.popLastOrNull()
             = if (isEmpty()) null else removeAt(lastIndex)

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.hayashihideo.himegoto.R
+import com.hayashihideo.himegoto.compactchipgroup.internal.ChipSizeManager
 import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsLayoutManager
 import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsManager
 import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsPool
@@ -47,7 +48,7 @@ class CompactChipGroup(context: Context,
     var chipsMarginTop = 0
     var chipsMarginBottom = 0
 
-    private val chipMeasure = ChipMeasure(owner = this)
+    private var chipSize = ChipSizeManager(context)
     private val chipHolders = mutableListOf<ChipHolder>()
     private val layoutManager: ChipsLayoutManager = ChipsManager(owner = this, pool = ChipsPool(context))
     private val restCountBadge = inflateRestCountBadge()
@@ -91,41 +92,8 @@ class CompactChipGroup(context: Context,
         layoutManager.chipsPool = pool
     }
 
-    private class ChipMeasure(owner: CompactChipGroup) {
-
-        private var isDirty = true
-
-        private val chip = LayoutInflater.from(owner.context)
-                .inflate(R.layout.compact_chip_group_default_chip, owner, false) as Chip
-
-        fun measureHeight(): Int {
-            measure()
-            return chip.measuredHeight
-        }
-
-        fun measureWidth(): Int {
-            measure()
-            return chip.measuredWidth
-        }
-
-        fun measureWidth(text: String): Int {
-            setText(text)
-            return measureWidth()
-        }
-
-        fun setText(text: String) {
-            chip.text = text
-            isDirty = true
-        }
-
-        private fun measure() {
-            if (isDirty) {
-                isDirty = false
-                chip.measure(
-                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
-            }
-        }
+    internal fun setChipSizeManager(manager: ChipSizeManager) {
+        chipSize = manager
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -166,9 +134,9 @@ class CompactChipGroup(context: Context,
             val maxLayoutWidthSpecified = -1 < maxLayoutWidth
             val maxLayoutHeightSpecified = -1 < maxLayoutHeight
 
-            val chipHeight = chipMeasure.measureHeight()
+            val chipHeight = chipSize.height()
             chipHolders.forEach {
-                it.layoutParams.width = chipMeasure.measureWidth(it.label)
+                it.layoutParams.width = chipSize.widthOf(it.label)
                 it.layoutParams.height = chipHeight
             }
 
