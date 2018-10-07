@@ -6,6 +6,7 @@ import android.support.annotation.AttrRes
 import android.support.annotation.StyleRes
 import android.support.design.chip.Chip
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,10 @@ class CompactChipGroup(context: Context,
                        @AttrRes defStyleAttr: Int,
                        @StyleRes defStyleRes: Int)
     : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
+
+    var layoutWithinBounds
+        set(value) { layoutManager.layoutWithinBounds = value }
+        get() = layoutManager.layoutWithinBounds
 
     var maxLines
         set(value) { layoutManager.maxLines = value }
@@ -144,14 +149,50 @@ class CompactChipGroup(context: Context,
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-//        if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY ||
-//                MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.AT_MOST) {
-//            throw IllegalArgumentException()
-//        }
-
         if ((layoutRequested && !measureCached) ||
                 cachedMeasureSpecs.x != widthMeasureSpec ||
                 cachedMeasureSpecs.y != heightMeasureSpec) {
+
+            var width = MeasureSpec.getSize(widthMeasureSpec)
+            var height = MeasureSpec.getSize(heightMeasureSpec)
+            val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+            val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+
+            val maxLayoutWidth = if (widthMode == MeasureSpec.UNSPECIFIED) -1 else
+                width - paddingStart - paddingEnd - chipsMarginStart - chipsMarginEnd
+            val maxLayoutHeight = if (heightMode == MeasureSpec.UNSPECIFIED) -1 else
+                height - paddingTop - paddingBottom - chipsMarginTop - chipsMarginBottom
+
+            val maxLayoutWidthSpecified = -1 < maxLayoutWidth
+            val maxLayoutHeightSpecified = -1 < maxLayoutHeight
+
+//            var width: Int
+//            val widthSpecified: Boolean
+//            when (MeasureSpec.getMode(widthMeasureSpec)) {
+//                MeasureSpec.EXACTLY, MeasureSpec.AT_MOST -> {
+//                    width = MeasureSpec.getSize(widthMeasureSpec)
+//                    widthSpecified = true
+//                }
+//                MeasureSpec.UNSPECIFIED -> {
+//                    width = 0
+//                    widthSpecified = false
+//                }
+//                else -> throw IllegalArgumentException()
+//            }
+//
+//            var height: Int
+//            val heightSpecified: Boolean
+//            when (MeasureSpec.getMode(heightMeasureSpec)) {
+//                MeasureSpec.EXACTLY, MeasureSpec.AT_MOST -> {
+//                    height = MeasureSpec.getSize(heightMeasureSpec)
+//                    heightSpecified = true
+//                }
+//                MeasureSpec.UNSPECIFIED -> {
+//                    height = 0
+//                    heightSpecified = false
+//                }
+//                else -> throw IllegalArgumentException()
+//            }
 
             val chipHeight = chipMeasure.measureHeight()
             chipHolders.forEach {
@@ -159,30 +200,47 @@ class CompactChipGroup(context: Context,
                 it.layoutParams.height = chipHeight
             }
 
-            val width = MeasureSpec.getSize(widthMeasureSpec)
-            val availableWidth = width - paddingStart - paddingEnd - chipsMarginStart - chipsMarginEnd
+//            val layoutWidth = if (!widthSpecified) 0
+//            else width - paddingStart - paddingEnd - chipsMarginStart - chipsMarginEnd
+//
+//            val layoutHeight = if (!heightSpecified) 0
+//            else height - paddingTop - paddingBottom - chipsMarginTop - chipsMarginBottom
 
-            // measure the max width of restCountBadge
+            // measure the max maxWidth of the badge temporarily
             setRestCount(chipHolders.size)
             restCountBadge.measure(
-                    MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(maxLayoutWidth, MeasureSpec.AT_MOST),
                     MeasureSpec.makeMeasureSpec(chipHeight, MeasureSpec.EXACTLY))
-
             val maxBadgeBounds = restCountBadgeMarginStart + restCountBadge.measuredWidth
-            layoutManager.layoutRoughly(availableWidth, maxBadgeBounds, chipHolders)
+
+            layoutManager.layoutRoughly(chipHolders, maxBadgeBounds,
+                    maxLayoutWidth, maxLayoutHeight, maxLayoutWidthSpecified, maxLayoutHeightSpecified)
 
             val laidOutChipCount = layoutManager.laidOutChipCount
             if (0 < laidOutChipCount && laidOutChipCount < chipHolders.size) {
-                // measure actual width of restCountBadge
+                // determine actual width of the badge
                 setRestCount(chipHolders.size - laidOutChipCount)
                 restCountBadge.measure(
-                        MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.AT_MOST),
+                        MeasureSpec.makeMeasureSpec(maxLayoutWidth, MeasureSpec.AT_MOST),
                         MeasureSpec.makeMeasureSpec(chipHeight, MeasureSpec.EXACTLY))
             }
 
-            val lines = layoutManager.lineCount
-            val height = paddingTop + paddingBottom + chipsMarginTop + chipsMarginBottom +
-                    lines * chipHeight + (lines - 1) * verticalGap
+            if (widthMode != MeasureSpec.EXACTLY) {
+                val needed = layoutManager.longestLineLength +
+                        paddingStart + paddingEnd + chipsMarginStart + chipsMarginEnd
+                width = if (widthMode == MeasureSpec.AT_MOST) Math.min(needed, width) else needed
+            }
+
+            if (heightMode != MeasureSpec.EXACTLY) {
+                val lines = layoutManager.lineCount
+                val needed = paddingTop + paddingBottom + chipsMarginTop + chipsMarginBottom +
+                        lines * chipHeight + (lines - 1) * verticalGap
+                height = if (heightMode == MeasureSpec.AT_MOST) Math.min(needed, height) else needed
+            }
+
+            if (chipHolders.isNotEmpty() && layoutManager.laidOutChipCount == 0) {
+                Log.e(CompactChipGroup::class.java.name, "There is not enough space for putting chips.")
+            }
 
             cachedMeasuredSize.set(width, height)
             cachedMeasureSpecs.set(widthMeasureSpec, heightMeasureSpec)
@@ -202,5 +260,14 @@ class CompactChipGroup(context: Context,
         measureCached = false
         layoutRequested = true
         super.requestLayout()
+    }
+
+    fun toStrFromMode(mode: Int): String {
+        return when(mode) {
+            MeasureSpec.AT_MOST -> "AT-MOST"
+            MeasureSpec.EXACTLY -> "EXACTLY"
+            MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
+            else -> "*unknown*"
+        }
     }
 }

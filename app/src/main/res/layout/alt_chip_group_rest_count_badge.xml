@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:textStyle="bold"
     android:gravity="center"
-    android:textSize="16sp"/>
+    android:textSize="16sp"
+    android:textColor="@android:color/white"/>

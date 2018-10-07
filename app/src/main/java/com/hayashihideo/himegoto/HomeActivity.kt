@@ -38,27 +38,29 @@ class HomeActivity : AppCompatActivity() {
 
 
 
-//        val holders = mutableListOf<List<ChipHolder>>()
-//        for (i in 1..500) {
-//            val range = (0..10).random()
-//            val start = (0..(data.size-range)).random()
-//            val list = mutableListOf<ChipHolder>()
-//            holders.add(list)
-//            for (j in start until (start+range)) {
-//                list.add(ChipHolder(data[j]))
-//            }
-//        }
-//
-//        val chipGroup = findViewById<CompactChipGroup>(R.id.chip_group)
-//        chipGroup.setChipHolders(holders[0])
-//        chipGroup.maxLines = 2
-//
-//        var index = 1
-//        button.setOnClickListener {
-//            chipGroup.setChipHolders(holders[index])
-//            ++index
-//            if (index == holders.size) index = 0
-//        }
+        val holders = mutableListOf<List<ChipHolder>>()
+        for (i in 1..500) {
+            val range = (0..10).random()
+            val start = (0..(data.size-range)).random()
+            val list = mutableListOf<ChipHolder>()
+            holders.add(list)
+            for (j in start until (start+range)) {
+                list.add(ChipHolder(data[j]))
+            }
+        }
+
+        val chipGroup = findViewById<CompactChipGroup>(R.id.chip_group)
+        chipGroup.setChipHolders(holders[0])
+        chipGroup.maxLines = 2
+        chipGroup.layoutWithinBounds = true
+
+        var index = 1
+        button.setOnClickListener {
+            Log.d("mylog", "set ${holders[index].size} chips")
+            chipGroup.setChipHolders(holders[index])
+            ++index
+            if (index == holders.size) index = 0
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

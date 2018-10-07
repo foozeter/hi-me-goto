@@ -11,16 +11,24 @@
     <com.hayashihideo.himegoto.compactchipgroup.recyclerview.RecyclerViewWithCCG
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
-    <!--<com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup-->
-        <!--android:id="@+id/chip_group"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginEnd="16dp"/>-->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup
+            android:visibility="visible"
+            android:id="@+id/chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:background="@android:color/black"/>
+    </HorizontalScrollView>
 
     <android.support.design.bottomappbar.BottomAppBar
+        android:visibility="gone"
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,16 +39,17 @@
         android:elevation="8dp"/>
 
     <android.support.design.widget.FloatingActionButton
+        android:visibility="gone"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/appbar"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/button"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="next >>>"-->
-        <!--android:layout_gravity="center"/>-->
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="next >>>"
+        android:layout_gravity="bottom"/>
 
 </android.support.design.widget.CoordinatorLayout>

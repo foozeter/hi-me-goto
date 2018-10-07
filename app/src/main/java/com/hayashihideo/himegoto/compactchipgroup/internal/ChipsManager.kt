@@ -28,11 +28,18 @@ internal class ChipsManager(
         get() = layoutSpec.maxLines
         set(value) { layoutSpec.maxLines = value }
 
+    override var layoutWithinBounds: Boolean
+        get() = layoutSpec.layoutWithinBounds
+        set(value) { layoutSpec.layoutWithinBounds = value }
+
     override val lineCount: Int
         get() = roughLayout.lineCount
 
     override val laidOutChipCount: Int
         get() = roughLayout.chipCount
+
+    override val longestLineLength: Int
+        get() = longestLineLengthInternal
 
     private val dirtyChips = mutableListOf<MutablePair>()
     private val scrappedChips = mutableListOf<MutablePair>()
@@ -40,6 +47,7 @@ internal class ChipsManager(
     private val layoutSpec = LayoutSpec()
     private var cacheSizeChangeListener: LocalChipsPool.LocalCacheSizeChangeListener? = null
     private var layoutMethod = CrammingLayoutMethod()
+    private var longestLineLengthInternal = 0
 
     override val lastPosition: Int
         get() = if (dirtyChips.isEmpty()) Constant.INVALID_POSITION else dirtyChips.lastIndex
@@ -59,11 +67,15 @@ internal class ChipsManager(
         }
     }
 
-    override fun layoutRoughly(width: Int, maxBadgeBounds: Int, chips: List<ChipHolder>) {
-        layoutSpec.width = width
-        layoutSpec.maxBadgeBounds = maxBadgeBounds
+    override fun layoutRoughly(chips: List<ChipHolder>, maxBadgeBounds: Int,
+                               maxWidth: Int, maxHeight: Int, maxWidthSpecified: Boolean, maxHeightSpecified: Boolean) {
+        layoutSpec.apply {
+            if (maxWidthSpecified) this.maxWidth = maxWidth else setMaxWidthAsUnlimited()
+            if (maxHeightSpecified) this.maxHeight = maxHeight else setMaxHeightAsUnlimited()
+            this.maxBadgeBounds = maxBadgeBounds
+        }
         roughLayout.clear()
-        layoutMethod.invoke(chips, roughLayout, layoutSpec)
+        longestLineLengthInternal = layoutMethod.invoke(chips, roughLayout, layoutSpec)
     }
 
     private fun prepareForLayout(roughLayout: RoughLayout) {
@@ -139,6 +151,8 @@ internal class ChipsManager(
     private fun loop(count: Int, process: () -> Unit) {
         for (n in 1..count) process()
     }
+
+    private fun max(a: Int, b: Int, c: Int) = Math.max(Math.max(a, b), c)
 
     private fun <T> MutableList<T>.popLastOrNull()
             = if (isEmpty()) null else removeAt(lastIndex)

@@ -46,10 +46,16 @@ internal class RoughLayout {
     fun forEachPosition(action: (line: Int, position: Int, lineChanged: Boolean) -> Unit) {
         var pos = 0
         layout.forEachIndexed { line, holders ->
-            holders.forEachIndexed { index, _ ->
+            holders.forEachIndexed { index, holder ->
                 action(line, pos, index == 0)
                 ++pos
             }
+        }
+    }
+
+    fun forEachInLine(line: Int, action: (holder: ChipHolder, index: Int) -> Unit) {
+        if (0 <= line && line < layout.size) {
+            layout[line].forEachIndexed { index, holder -> action(holder, index) }
         }
     }
 
