@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 
-internal class ChipSizeManager(context: Context) {
+internal class ChipMeasure(private val context: Context, factory: ChipFactory) {
 
     private val unspecifiedMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-    private var model = ChipFactory.create(context)
+    private var model = factory.create(context)
     private val cachedWidths = mutableMapOf<String, Int>()
     private var cachedHeight = 0
     private var isDirty = true
@@ -27,7 +27,16 @@ internal class ChipSizeManager(context: Context) {
         return cachedHeight
     }
 
-    fun clearCache() = cachedWidths.clear()
+    fun clearCache() {
+        cachedWidths.clear()
+        cachedHeight = 0
+        isDirty = true
+    }
+
+    fun initWithFactory(factory: ChipFactory) {
+        model = factory.create(context)
+        clearCache()
+    }
 
     private fun measure(label: String) {
         model.text = label
@@ -38,7 +47,6 @@ internal class ChipSizeManager(context: Context) {
     private fun measure() {
         model.measure(unspecifiedMeasureSpec, unspecifiedMeasureSpec)
         cachedHeight = model.measuredHeight
-        Log.d("mylog", "measure")
     }
 
     private fun invalidate() {

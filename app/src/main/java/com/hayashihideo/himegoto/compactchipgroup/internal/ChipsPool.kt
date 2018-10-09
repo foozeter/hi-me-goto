@@ -2,15 +2,20 @@ package com.hayashihideo.himegoto.compactchipgroup.internal
 
 import android.content.Context
 import android.support.design.chip.Chip
-import android.util.Log
-import android.view.ViewGroup
 import java.lang.ref.SoftReference
 
-internal class ChipsPool(val context: Context)
+internal class ChipsPool(private val context: Context, factory: ChipFactory)
     : LocalChipsPool.LocalCacheSizeChangeListener {
+
+    var factory = factory
+        set(value) {
+            field = value
+            refresh()
+        }
 
     private val localPools = mutableListOf<LocalChipsPool>()
     private val cleanChipRefs = mutableListOf<SoftReference<Chip>>()
+    private var ignoreLocalCacheSizeChanges = false
 
     fun recycle(chip: Chip) {
         if (chip.parent != null) {
@@ -30,7 +35,7 @@ internal class ChipsPool(val context: Context)
             val chip = pool.obtainCleanChip()
             if (chip != null) return chip
         }
-        return ChipFactory.create(context)
+        return factory.create(context)
     }
 
     fun register(pool: LocalChipsPool): Boolean {
@@ -51,8 +56,10 @@ internal class ChipsPool(val context: Context)
         return removed
     }
 
-    override fun onLocalCacheSizeChanged() 
-            = sortLocalPools()
+    override fun onLocalCacheSizeChanged() {
+        if (ignoreLocalCacheSizeChanges) return
+        sortLocalPools()
+    }
 
     private fun sortLocalPools()
             = localPools.sortBy { it.cacheSize() * -1 }
@@ -86,9 +93,19 @@ internal class ChipsPool(val context: Context)
     private fun <T> MutableList<T>.popLast()
             = removeAt(size - 1)
 
-    fun clear() {
-        localPools.forEach { it.removeLocalCacheSizeChangeListener() }
-        localPools.clear()
+    private fun refresh() = ignoreCacheSizeChangesDuring {
+        clearCache()
+        localPools.forEach { it.refresh() }
+    }
+
+    private fun clearCache() {
         cleanChipRefs.clear()
+        localPools.forEach { it.clearCache() }
+    }
+
+    private fun ignoreCacheSizeChangesDuring(process: () -> Unit) {
+        ignoreLocalCacheSizeChanges = true
+        process()
+        ignoreLocalCacheSizeChanges =false
     }
 }

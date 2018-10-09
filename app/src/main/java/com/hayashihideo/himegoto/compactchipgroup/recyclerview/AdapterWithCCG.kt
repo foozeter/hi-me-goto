@@ -3,6 +3,7 @@ package com.hayashihideo.himegoto.compactchipgroup.recyclerview
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.ViewGroup
+import com.hayashihideo.himegoto.compactchipgroup.internal.ChipFactory
 
 abstract class AdapterWithCCG<VH>: RecyclerView.Adapter<VH>()
         where VH: RecyclerView.ViewHolder, VH: CCGHolder {
@@ -31,4 +32,9 @@ abstract class AdapterWithCCG<VH>: RecyclerView.Adapter<VH>()
      * An alternative method of RecyclerView.Adapter#onCreateViewHolder(ViewGroup, Int).
      */
     abstract fun onMakeViewHolder(parent: ViewGroup, viewType: Int): VH
+
+    /**
+     * Return a custom chip factory, or null.
+     */
+    open fun getChipFactory(): ChipFactory? = null
 }

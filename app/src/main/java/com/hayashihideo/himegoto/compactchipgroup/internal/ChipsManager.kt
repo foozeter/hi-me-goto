@@ -1,12 +1,14 @@
 package com.hayashihideo.himegoto.compactchipgroup.internal
 
+import android.graphics.Point
 import android.support.design.chip.Chip
 import android.view.View
 import com.hayashihideo.himegoto.compactchipgroup.ChipHolder
 import com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup
 
-internal class ChipsManager(
-        private val owner: CompactChipGroup, pool: ChipsPool)
+internal class ChipsManager(private val owner: CompactChipGroup,
+                            override var chipMeasure: ChipMeasure,
+                            pool: ChipsPool)
     : LocalChipsPool, ChipsLayoutManager {
 
     override var chipsPool = pool.apply { register(this@ChipsManager) }
@@ -38,16 +40,19 @@ internal class ChipsManager(
     override val laidOutChipCount: Int
         get() = roughLayout.chipCount
 
-    override val longestLineLength: Int
-        get() = longestLineLengthInternal
+    override val layoutWidth: Int
+        get() = layoutBounds.x
+
+    override val layoutHeight: Int
+        get() = layoutBounds.y
 
     private val dirtyChips = mutableListOf<MutablePair>()
     private val scrappedChips = mutableListOf<MutablePair>()
     private val roughLayout = RoughLayout()
     private val layoutSpec = LayoutSpec()
+    private val layoutBounds = Point()
     private var cacheSizeChangeListener: LocalChipsPool.LocalCacheSizeChangeListener? = null
     private var layoutMethod = CrammingLayoutMethod()
-    private var longestLineLengthInternal = 0
 
     override val lastPosition: Int
         get() = if (dirtyChips.isEmpty()) Constant.INVALID_POSITION else dirtyChips.lastIndex
@@ -75,7 +80,41 @@ internal class ChipsManager(
             this.maxBadgeBounds = maxBadgeBounds
         }
         roughLayout.clear()
-        longestLineLengthInternal = layoutMethod.invoke(chips, roughLayout, layoutSpec)
+        layoutMethod.invoke(chips, roughLayout, layoutSpec, chipMeasure, layoutBounds)
+    }
+
+    override fun cacheSize() = scrappedChips.size
+
+    override fun setLocalCacheSizeChangeListener(
+            listener: LocalChipsPool.LocalCacheSizeChangeListener) {
+        cacheSizeChangeListener = listener
+    }
+
+    override fun removeLocalCacheSizeChangeListener() {
+        cacheSizeChangeListener = null
+    }
+
+    override fun getChipForPosition(position: Int) = dirtyChips[position].chip
+
+    override fun obtainCleanChip(): Chip? {
+        val pair = scrappedChips.popLastOrNull()
+        pair ?: return null
+        return cleanChip(pair.chip)
+    }
+
+    override fun refresh() {
+        clearCache()
+        dirtyChips.forEach { owner.removeViewInLayout(it.chip) }
+        dirtyChips.clear()
+        roughLayout.clear()
+        layoutBounds.set(0, 0)
+        owner.requestLayout()
+    }
+
+    override fun clearCache() {
+        scrappedChips.forEach { owner.removeView(it.chip) }
+        scrappedChips.clear()
+        cacheSizeChangeListener?.onLocalCacheSizeChanged()
     }
 
     private fun prepareForLayout(roughLayout: RoughLayout) {
@@ -114,32 +153,13 @@ internal class ChipsManager(
             val chip = it.chip
             val holder = it.holder
             holder.bind(chip)
-            chip.measure(View.MeasureSpec.makeMeasureSpec(holder.layoutParams.width, View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(holder.layoutParams.height, View.MeasureSpec.EXACTLY))
+            chip.measure(View.MeasureSpec.makeMeasureSpec(chipMeasure.widthOf(holder.label), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(chipMeasure.height(), View.MeasureSpec.EXACTLY))
         }
 
         if (prevCacheSize != scrappedChips.size) {
             cacheSizeChangeListener?.onLocalCacheSizeChanged()
         }
-    }
-
-    override fun cacheSize() = scrappedChips.size
-
-    override fun setLocalCacheSizeChangeListener(
-            listener: LocalChipsPool.LocalCacheSizeChangeListener) {
-        cacheSizeChangeListener = listener
-    }
-
-    override fun removeLocalCacheSizeChangeListener() {
-        cacheSizeChangeListener = null
-    }
-
-    override fun getChipForPosition(position: Int) = dirtyChips[position].chip
-
-    override fun obtainCleanChip(): Chip? {
-        val pair = scrappedChips.popLastOrNull()
-        pair ?: return null
-        return cleanChip(pair.chip)
     }
 
     private fun cleanChip(chip: Chip): Chip {

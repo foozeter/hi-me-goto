@@ -24,20 +24,6 @@ class HomeActivity : AppCompatActivity() {
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = Ad()
 
-//        val holders = mutableListOf<ChipHolder>()
-//        for (i in 0 until data.size) {
-//            holders.add(ChipHolder(data[i]))
-//        }
-
-//        val holders = mutableListOf<ChipHolder>()
-//        val labels = listOf("i know you", "kind of love", "love", "verses")
-//        labels.forEach { holders.add(ChipHolder(it)) }
-
-
-
-
-
-
         val holders = mutableListOf<List<ChipHolder>>()
         for (i in 1..500) {
             val range = (0..10).random()

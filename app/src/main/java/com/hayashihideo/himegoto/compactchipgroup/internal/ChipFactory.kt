@@ -5,15 +5,18 @@ import android.support.design.chip.Chip
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.hayashihideo.himegoto.R
-import com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup
 
-internal class ChipFactory {
-    companion object {
-        fun create(context: Context): Chip {
-            val chip = LayoutInflater.from(context)
-                    .inflate(R.layout.compact_chip_group_default_chip, null, false) as Chip
-            chip.layoutParams = ViewGroup.LayoutParams(0, 0)
-            return chip
-        }
+open class ChipFactory {
+
+    internal fun create(context: Context): Chip {
+        val chip = onCreateChip(LayoutInflater.from(context))
+        if (chip.parent != null) RuntimeException()
+        chip.layoutParams = emptyLayoutParams()
+        return chip
     }
+
+    open protected fun onCreateChip(inflater: LayoutInflater): Chip =
+            inflater.inflate(R.layout.compact_chip_group_default_chip, null, false) as Chip
+
+    private fun emptyLayoutParams() = ViewGroup.LayoutParams(0, 0)
 }

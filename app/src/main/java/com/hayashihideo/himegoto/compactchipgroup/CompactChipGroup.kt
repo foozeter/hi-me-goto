@@ -12,10 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.hayashihideo.himegoto.R
-import com.hayashihideo.himegoto.compactchipgroup.internal.ChipSizeManager
-import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsLayoutManager
-import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsManager
-import com.hayashihideo.himegoto.compactchipgroup.internal.ChipsPool
+import com.hayashihideo.himegoto.compactchipgroup.internal.*
 
 class CompactChipGroup(context: Context,
                        attrs: AttributeSet?,
@@ -48,16 +45,16 @@ class CompactChipGroup(context: Context,
     var chipsMarginTop = 0
     var chipsMarginBottom = 0
 
-    private var chipSize = ChipSizeManager(context)
-    private val chipHolders = mutableListOf<ChipHolder>()
-    private val layoutManager: ChipsLayoutManager = ChipsManager(owner = this, pool = ChipsPool(context))
     private val restCountBadge = inflateRestCountBadge()
-    private var layoutRequested = false
+    private val chipHolders = mutableListOf<ChipHolder>()
+    private val layoutManager: ChipsLayoutManager =
+            ChipsManager(this, ChipMeasure(context, ChipFactory()), ChipsPool(context, ChipFactory()))
 
-    // Use in onMeasure()
-    private var measureCached = false
+
     private val cachedMeasureSpecs = Point(-1, -1)
     private val cachedMeasuredSize = Point()
+    private var layoutRequested = false
+    private var measureCached = false
 
     constructor(context: Context,
                 attrs: AttributeSet?,
@@ -88,12 +85,9 @@ class CompactChipGroup(context: Context,
     internal fun addChipInLayout(chip: Chip, params: ViewGroup.LayoutParams, preventRequestLayout: Boolean)
             = addViewInLayout(chip, -1, params, preventRequestLayout)
 
-    internal fun setChipsPool(pool: ChipsPool) {
+    internal fun setShared(pool: ChipsPool, measure: ChipMeasure) {
+        layoutManager.chipMeasure = measure
         layoutManager.chipsPool = pool
-    }
-
-    internal fun setChipSizeManager(manager: ChipSizeManager) {
-        chipSize = manager
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -133,12 +127,13 @@ class CompactChipGroup(context: Context,
 
             val maxLayoutWidthSpecified = -1 < maxLayoutWidth
             val maxLayoutHeightSpecified = -1 < maxLayoutHeight
+            val chipHeight = layoutManager.chipMeasure.height()
 
-            val chipHeight = chipSize.height()
-            chipHolders.forEach {
-                it.layoutParams.width = chipSize.widthOf(it.label)
-                it.layoutParams.height = chipHeight
-            }
+//            val chipHeight = chipSize.height()
+//            chipHolders.forEach {
+//                it.layoutParams.width = chipSize.widthOf(it.label)
+//                it.layoutParams.height = chipHeight
+//            }
 
             // measure the max maxWidth of the badge temporarily
             setRestCount(chipHolders.size)
@@ -160,15 +155,12 @@ class CompactChipGroup(context: Context,
             }
 
             if (widthMode != MeasureSpec.EXACTLY) {
-                val needed = layoutManager.longestLineLength +
-                        paddingStart + paddingEnd + chipsMarginStart + chipsMarginEnd
+                val needed = layoutManager.layoutWidth + paddingStart + paddingEnd + chipsMarginStart + chipsMarginEnd
                 width = if (widthMode == MeasureSpec.AT_MOST) Math.min(needed, width) else needed
             }
 
             if (heightMode != MeasureSpec.EXACTLY) {
-                val lines = layoutManager.lineCount
-                val needed = paddingTop + paddingBottom + chipsMarginTop + chipsMarginBottom +
-                        lines * chipHeight + (lines - 1) * verticalGap
+                val needed = layoutManager.layoutHeight + paddingTop + paddingBottom + chipsMarginTop + chipsMarginBottom
                 height = if (heightMode == MeasureSpec.AT_MOST) Math.min(needed, height) else needed
             }
 

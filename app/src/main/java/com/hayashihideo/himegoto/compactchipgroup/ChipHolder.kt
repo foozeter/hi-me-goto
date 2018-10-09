@@ -8,9 +8,6 @@ import android.view.ViewGroup
  */
 open class ChipHolder(var label: String) {
 
-    // todo; delete this property.
-    internal val layoutParams = ViewGroup.LayoutParams(0, 0)
-
     open fun bind(chip: Chip) {
         chip.text = label
     }
@@ -18,18 +15,12 @@ open class ChipHolder(var label: String) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as ChipHolder
-
         if (label != other.label) return false
-        if (layoutParams != other.layoutParams) return false
-
         return true
     }
 
     override fun hashCode(): Int {
-        var result = label.hashCode()
-        result = 31 * result + layoutParams.hashCode()
-        return result
+        return label.hashCode()
     }
 }

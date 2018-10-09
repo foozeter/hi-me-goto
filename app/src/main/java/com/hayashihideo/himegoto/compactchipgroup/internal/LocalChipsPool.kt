@@ -12,4 +12,6 @@ internal interface LocalChipsPool {
     fun cacheSize(): Int
     fun setLocalCacheSizeChangeListener(listener: LocalCacheSizeChangeListener)
     fun removeLocalCacheSizeChangeListener()
+    fun refresh()
+    fun clearCache()
 }
