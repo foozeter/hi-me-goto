@@ -63,34 +63,38 @@ internal class ChipStore(private val owner: AltChipGroup,
 
     fun prepareChipsForLayout(roughLayout: RoughLayout) {
         val prevCacheSize = scrappedChips.size
-        if (dirtyChips.size < roughLayout.chipCount) {
-            dirtyChips.forEachIndexed { pos, pair -> pair.holder = roughLayout.getChipHolderForPosition(pos) }
-            for (pos in dirtyChips.size until roughLayout.chipCount) {
-                val holder = roughLayout.getChipHolderForPosition(pos)
-                var pair = scrappedChips.popLastOrNull()
-                if (pair == null) {
-                    val chip = shared.obtainCleanChip()
-                    owner.addViewInLayoutInternal(chip, -1, chip.layoutParams, preventRequestLayout = true)
-                    pair = MutablePair(holder, chip)
-                } else {
-                    pair.holder = holder
+        when {
+            dirtyChips.size < roughLayout.chipCount -> {
+                dirtyChips.forEachIndexed { pos, pair -> pair.holder = roughLayout.getChipHolderForPosition(pos) }
+                for (pos in dirtyChips.size until roughLayout.chipCount) {
+                    val holder = roughLayout.getChipHolderForPosition(pos)
+                    var pair = scrappedChips.popLastOrNull()
+                    if (pair == null) {
+                        val chip = shared.obtainCleanChip()
+                        owner.addViewInLayoutInternal(chip, -1, chip.layoutParams, preventRequestLayout = true)
+                        pair = MutablePair(holder, chip)
+                    } else {
+                        pair.holder = holder
+                    }
+                    pair.chip.visibility = View.VISIBLE
+                    dirtyChips.add(pair)
                 }
-                pair.chip.visibility = View.VISIBLE
-                dirtyChips.add(pair)
             }
 
-        } else if (roughLayout.chipCount < dirtyChips.size) {
-            for (pos in 0 until roughLayout.chipCount) {
-                dirtyChips[pos].holder = roughLayout.getChipHolderForPosition(pos)
-            }
-            loop(dirtyChips.size - roughLayout.chipCount) {
-                val pair = dirtyChips.popLast()
-                pair.chip.visibility = View.GONE
-                scrappedChips.add(pair)
+            roughLayout.chipCount < dirtyChips.size -> {
+                for (pos in 0 until roughLayout.chipCount) {
+                    dirtyChips[pos].holder = roughLayout.getChipHolderForPosition(pos)
+                }
+                loop(dirtyChips.size - roughLayout.chipCount) {
+                    val pair = dirtyChips.popLast()
+                    pair.chip.visibility = View.GONE
+                    scrappedChips.add(pair)
+                }
             }
 
-        } else {
-            dirtyChips.forEachIndexed { pos, pair -> pair.holder = roughLayout.getChipHolderForPosition(pos) }
+            else -> {
+                dirtyChips.forEachIndexed { pos, pair -> pair.holder = roughLayout.getChipHolderForPosition(pos) }
+            }
         }
 
         if (prevCacheSize != scrappedChips.size) {
