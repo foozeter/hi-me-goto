@@ -1,7 +1,6 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
-import com.hayashihideo.himegoto.compactchipgroup.ChipHolder
-import com.hayashihideo.himegoto.compactchipgroup.internal.Constant.Companion.UNSPECIFIED
+import com.hayashihideo.himegoto.altchipgroup.ChipHolder
 
 internal class RoughLayout {
 
@@ -10,6 +9,9 @@ internal class RoughLayout {
 
     val lineCount: Int
         get() = layout.size
+
+    val lastPosition: Int
+        get() = if (0 < chipCount) chipCount - 1 else -1
 
     private val layout = mutableListOf<MutableList<ChipHolder>>()
 

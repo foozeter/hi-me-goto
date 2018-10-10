@@ -1,8 +1,8 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
 import android.support.design.chip.Chip
 
-internal interface LocalChipsPool {
+internal interface LocalChipPool {
 
     interface LocalCacheSizeChangeListener {
         fun onLocalCacheSizeChanged()

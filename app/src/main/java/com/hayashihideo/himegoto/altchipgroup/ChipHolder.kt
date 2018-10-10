@@ -1,4 +1,4 @@
-package com.hayashihideo.himegoto.compactchipgroup
+package com.hayashihideo.himegoto.altchipgroup
 
 import android.support.design.chip.Chip
 import android.view.ViewGroup

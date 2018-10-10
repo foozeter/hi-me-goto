@@ -7,10 +7,9 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.TextView
-import com.hayashihideo.himegoto.compactchipgroup.ChipHolder
-import com.hayashihideo.himegoto.compactchipgroup.CompactChipGroup
-import com.hayashihideo.himegoto.compactchipgroup.recyclerview.AdapterWithCCG
-import com.hayashihideo.himegoto.compactchipgroup.recyclerview.CCGHolder
+import com.hayashihideo.himegoto.altchipgroup.AltChipGroup
+import com.hayashihideo.himegoto.altchipgroup.RecyclerViewWithAltChipGroup
+import com.hayashihideo.himegoto.altchipgroup.ChipHolder
 import kotlinx.android.synthetic.main.activity_home.*
 import java.util.*
 
@@ -35,7 +34,7 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        val chipGroup = findViewById<CompactChipGroup>(R.id.chip_group)
+        val chipGroup = findViewById<AltChipGroup>(R.id.chip_group)
         chipGroup.setChipHolders(holders[0])
         chipGroup.maxLines = 2
         chipGroup.layoutWithinBounds = true
@@ -88,7 +87,7 @@ private val data = listOf(
         "q",
         "sense")
 
-private class Ad: AdapterWithCCG<Vh>() {
+private class Ad: RecyclerViewWithAltChipGroup.Adapter<Vh>() {
 
     val holders = mutableListOf<List<ChipHolder>>()
 
@@ -119,11 +118,11 @@ private class Ad: AdapterWithCCG<Vh>() {
     }
 }
 
-private class Vh(view: View): RecyclerView.ViewHolder(view), CCGHolder {
-    val chipGroup: CompactChipGroup = view.findViewById(R.id.chip_group)
+private class Vh(view: View): RecyclerViewWithAltChipGroup.ViewHolder(view) {
+    val chipGroup: AltChipGroup = view.findViewById(R.id.chip_group)
     val title: TextView = view.findViewById(R.id.title)
 
-    override fun getCcg(): CompactChipGroup {
+    override fun getAltChipGroup(): AltChipGroup {
         return chipGroup
     }
 

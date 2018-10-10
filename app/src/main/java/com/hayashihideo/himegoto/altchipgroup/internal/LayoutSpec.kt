@@ -1,4 +1,4 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
 internal class LayoutSpec(
         var maxWidth: Int = -1,

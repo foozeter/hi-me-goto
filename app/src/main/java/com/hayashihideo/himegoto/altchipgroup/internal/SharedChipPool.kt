@@ -1,11 +1,13 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
 import android.content.Context
 import android.support.design.chip.Chip
+import com.hayashihideo.himegoto.altchipgroup.ChipFactory
+import com.hayashihideo.himegoto.altchipgroup.internal.tools.popLast
 import java.lang.ref.SoftReference
 
-internal class ChipsPool(private val context: Context, factory: ChipFactory)
-    : LocalChipsPool.LocalCacheSizeChangeListener {
+internal class SharedChipPool(private val context: Context, factory: ChipFactory)
+    : LocalChipPool.LocalCacheSizeChangeListener {
 
     var factory = factory
         set(value) {
@@ -13,7 +15,7 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
             refresh()
         }
 
-    private val localPools = mutableListOf<LocalChipsPool>()
+    private val localPools = mutableListOf<LocalChipPool>()
     private val cleanChipRefs = mutableListOf<SoftReference<Chip>>()
     private var ignoreLocalCacheSizeChanges = false
 
@@ -38,7 +40,7 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
         return factory.create(context)
     }
 
-    fun register(pool: LocalChipsPool): Boolean {
+    fun register(pool: LocalChipPool): Boolean {
         val added = addLocalPool(pool)
         if (added) {
             pool.setLocalCacheSizeChangeListener(this)
@@ -47,7 +49,7 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
         return added
     }
 
-    fun unregister(pool: LocalChipsPool): Boolean {
+    fun unregister(pool: LocalChipPool): Boolean {
         val removed = removeLocalPool(pool)
         if (removed) {
             pool.removeLocalCacheSizeChangeListener()
@@ -64,7 +66,7 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
     private fun sortLocalPools()
             = localPools.sortBy { it.cacheSize() * -1 }
 
-    private fun addLocalPool(pool: LocalChipsPool): Boolean {
+    private fun addLocalPool(pool: LocalChipPool): Boolean {
         var contains = false
         localPools.forEach {
             contains = contains.or(isSameReference(it, pool))
@@ -75,7 +77,7 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
         return !contains
     }
 
-    private fun removeLocalPool(pool: LocalChipsPool): Boolean {
+    private fun removeLocalPool(pool: LocalChipPool): Boolean {
         var removed = false
         for (i in 0 until localPools.size) {
             if (isSameReference(localPools[i], pool)) {
@@ -87,11 +89,8 @@ internal class ChipsPool(private val context: Context, factory: ChipFactory)
         return removed
     }
 
-    private fun isSameReference(m1: LocalChipsPool, m2: LocalChipsPool)
+    private fun isSameReference(m1: LocalChipPool, m2: LocalChipPool)
             = m1 === m2
-
-    private fun <T> MutableList<T>.popLast()
-            = removeAt(size - 1)
 
     private fun refresh() = ignoreCacheSizeChangesDuring {
         clearCache()

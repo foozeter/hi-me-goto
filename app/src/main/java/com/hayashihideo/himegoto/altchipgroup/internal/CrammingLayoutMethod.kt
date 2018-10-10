@@ -1,9 +1,9 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
 import android.graphics.Point
 import android.support.v4.math.MathUtils
 import android.util.Log
-import com.hayashihideo.himegoto.compactchipgroup.ChipHolder
+import com.hayashihideo.himegoto.altchipgroup.ChipHolder
 
 internal class CrammingLayoutMethod: LayoutMethod {
 
@@ -60,7 +60,7 @@ internal class CrammingLayoutMethod: LayoutMethod {
         restChips.clear()
         onNewLineAdded(length)
     }
-    
+
     // try to fill a line with some of the chips and no space left
     private fun cramChipsIntoNewLineAsManyAsPossible(maxWidth: Int): Int {
         layout!!.newLine()

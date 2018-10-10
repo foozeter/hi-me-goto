@@ -1,4 +1,4 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup
 
 import android.content.Context
 import android.support.design.chip.Chip
@@ -15,8 +15,8 @@ open class ChipFactory {
         return chip
     }
 
-    open protected fun onCreateChip(inflater: LayoutInflater): Chip =
-            inflater.inflate(R.layout.compact_chip_group_default_chip, null, false) as Chip
+    protected fun onCreateChip(inflater: LayoutInflater): Chip =
+            inflater.inflate(R.layout.alt_chip_group_default_chip, null, false) as Chip
 
     private fun emptyLayoutParams() = ViewGroup.LayoutParams(0, 0)
 }

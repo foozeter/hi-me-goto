@@ -1,8 +1,12 @@
-package com.hayashihideo.himegoto.compactchipgroup.internal
+package com.hayashihideo.himegoto.altchipgroup.internal
 
 import android.content.Context
+import android.support.design.chip.Chip
 import android.util.Log
 import android.view.View
+import com.hayashihideo.himegoto.altchipgroup.ChipFactory
+import com.hayashihideo.himegoto.altchipgroup.ChipHolder
+import com.hayashihideo.himegoto.altchipgroup.internal.tools.makeExactlyMeasureSpec
 
 internal class ChipMeasure(private val context: Context, factory: ChipFactory) {
 
@@ -47,6 +51,11 @@ internal class ChipMeasure(private val context: Context, factory: ChipFactory) {
     private fun measure() {
         model.measure(unspecifiedMeasureSpec, unspecifiedMeasureSpec)
         cachedHeight = model.measuredHeight
+    }
+
+    fun measureChipForHolder(chip: Chip, holder: ChipHolder) {
+        chip.measure(makeExactlyMeasureSpec(widthOf(holder.label)),
+                makeExactlyMeasureSpec(height()))
     }
 
     private fun invalidate() {
