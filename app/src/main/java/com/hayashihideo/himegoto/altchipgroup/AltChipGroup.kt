@@ -62,7 +62,7 @@ class AltChipGroup(context: Context,
 
     internal var chipMeasure = ChipMeasure(context, ChipFactory())
     internal val viewStore = ChipStore(this, SharedChipPool(context, ChipFactory()))
-    internal val clickEventManager = ClickEventManager(viewStore)
+    internal val clickEventManager = ClickEventManager(this)
 
     constructor(context: Context,
                 attrs: AttributeSet?,
@@ -85,18 +85,34 @@ class AltChipGroup(context: Context,
         requestLayout()
     }
 
-    fun setOnChipClickListener(listener: (chip: Chip, holder: ChipHolder, position: Int) -> Unit) {
-        clickEventManager.clickListener = object: View.OnClickListener {
-            override fun onClick(view: View) {
-                view as Chip
-                val position = viewStore.getPositionForChip(view)
-                listener(view, viewStore.getHolderForPosition(position), position)
-            }
+    fun setOnChipClickListener(listener: (group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int) -> Unit) {
+        clickEventManager.clickListener = object: OnChipClickListener {
+            override fun onChipClick(group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int)
+                    = listener(group, chip, holder, position)
         }
+    }
+
+    fun setOnChipLongClickListener(listener: (group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int) -> Boolean) {
+        clickEventManager.longClickListener = object: OnChipLongClickListener {
+            override fun onChipLongClick(group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int): Boolean
+                    = listener(group, chip, holder, position)
+        }
+    }
+
+    fun setOnChipClickListener(listener: OnChipClickListener) {
+        clickEventManager.clickListener = listener
+    }
+
+    fun setOnChipLongClickListener(listener: OnChipLongClickListener) {
+        clickEventManager.longClickListener = listener
     }
 
     fun removeOnChipClickListener() {
         clickEventManager.clickListener = null
+    }
+
+    fun removeOnChipLongClickListener() {
+        clickEventManager.longClickListener = null
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -154,5 +170,17 @@ class AltChipGroup(context: Context,
             @AttrRes defStyleAttr: Int,
             @StyleRes defStyleRes: Int) {
 
+    }
+
+    interface OnChipClickListener {
+        fun onChipClick(group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int)
+    }
+
+    interface OnChipLongClickListener {
+
+        /**
+         * @return true if the callback consumed the long click, false otherwise.
+         */
+        fun onChipLongClick(group: AltChipGroup, chip: Chip, holder: ChipHolder, position: Int): Boolean
     }
 }

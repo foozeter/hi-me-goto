@@ -22,6 +22,14 @@ class HomeActivity : AppCompatActivity() {
 
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = Ad()
+        list.setOnChipClickListener { chip, holder, chipPosition, itemPosition ->
+            Log.d("mylog", "chip was clicked! (chipPosition = $chipPosition, itemPosition = $itemPosition, label = ${holder.label})")
+        }
+
+        list.setOnChipLongClickListener { chip, holder, chipPosition, itemPosition ->
+            Log.d("mylog", "chip was long clicked! (chipPosition = $chipPosition, itemPosition = $itemPosition, label = ${holder.label})")
+            true
+        }
 
         val holders = mutableListOf<List<ChipHolder>>()
         for (i in 1..500) {
@@ -38,7 +46,7 @@ class HomeActivity : AppCompatActivity() {
         chipGroup.setChipHolders(holders[0])
         chipGroup.maxLines = 2
         chipGroup.layoutWithinBounds = true
-        chipGroup.setOnChipClickListener { chip, holder, position ->
+        chipGroup.setOnChipClickListener { group, chip, holder, position ->
             Log.d("mylog", "chip was clicked! (position = $position, label = ${holder.label})")
         }
 
@@ -106,7 +114,7 @@ private class Ad: RecyclerViewWithAltChipGroup.Adapter<Vh>() {
         }
     }
 
-    override fun onMakeViewHolder(parent: ViewGroup, viewType: Int): Vh {
+    override fun onCreateViewHolderAlt(parent: ViewGroup, viewType: Int): Vh {
         return Vh(LayoutInflater.from(parent.context)
                 .inflate(R.layout.chunk_list_item, parent, false))
     }
@@ -115,9 +123,9 @@ private class Ad: RecyclerViewWithAltChipGroup.Adapter<Vh>() {
         return holders.size
     }
 
-    override fun onBindViewHolder(p0: Vh, p1: Int) {
-        p0.chipGroup.setChipHolders(holders[p1])
-        p0.title.text = "${holders[p1].size} CHIPS"
+    override fun onBindViewHolderAlt(holder: Vh, position: Int) {
+        holder.chipGroup.setChipHolders(holders[position])
+        holder.title.text = "${holders[position].size} CHIPS"
     }
 }
 
