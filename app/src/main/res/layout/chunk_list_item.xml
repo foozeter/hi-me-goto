@@ -36,7 +36,13 @@
         android:id="@+id/chip_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/symbol_and_title"/>
-
+        android:layout_below="@+id/symbol_and_title"
+        app:chipsMarginTop="16dp"
+        app:chipsMarginBottom="8dp"
+        app:chipsMarginStart="32dp"
+        app:maxLines="2"
+        app:verticalGap="8dp"
+        app:horizontalGap="8dp"
+        app:restCountBadgeMarginStart="12dp" />
 
 </RelativeLayout>

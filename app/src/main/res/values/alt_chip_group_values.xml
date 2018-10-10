@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    // attributes
+    <declare-styleable name="AltChipGroup">
+        <attr name="layoutWithinBounds" format="boolean"/>
+        <attr name="maxLines" format="integer"/>
+        <attr name="horizontalGap" format="dimension"/>
+        <attr name="verticalGap" format="dimension"/>
+        <attr name="restCountBadgeMarginStart" format="dimension"/>
+        <attr name="chipsMarginStart" format="dimension"/>
+        <attr name="chipsMarginEnd" format="dimension"/>
+        <attr name="chipsMarginTop" format="dimension"/>
+        <attr name="chipsMarginBottom" format="dimension"/>
+    </declare-styleable>
+
+    // sample data for the edit mode
+    <string-array name="sample_chip_labels">
+        <item>Funny Bunny</item>
+        <item>I know You</item>
+        <item>Mr.Droophy</item>
+        <item>Blues Drive Monster</item>
+        <item>cherry</item>
+        <item>like a love song</item>
+        <item>Beautiful morning with you</item>
+        <item>Black Sheep</item>
+        <item>Nowhere</item>
+        <item>TABASCO DISCO</item>
+        <item>Sleepy Head</item>
+        <item>Ninny</item>
+        <item>MY FOOT</item>
+        <item>LITTLE BUSTERS</item>
+        <item>LAST DINOSAUR</item>
+    </string-array>
+
+    // used as a key of View's tag
+    <integer name="alt_chip_group_tag_key_item_adapter_position">0</integer>
+</resources>

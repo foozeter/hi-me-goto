@@ -136,14 +136,4 @@ private class Vh(view: View): RecyclerViewWithAltChipGroup.ViewHolder(view) {
     override fun getAltChipGroup(): AltChipGroup {
         return chipGroup
     }
-
-    init {
-        chipGroup.maxLines = 2
-        chipGroup.horizontalGap =  24
-        chipGroup.verticalGap = 24
-        chipGroup.chipsMarginTop = 24
-        chipGroup.chipsMarginBottom = 24
-        chipGroup.chipsMarginStart = 24
-        chipGroup.restCountBadgeMarginStart = 36
-    }
 }

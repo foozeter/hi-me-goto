@@ -8,6 +8,7 @@ import android.support.design.chip.Chip
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import com.hayashihideo.himegoto.R
 import com.hayashihideo.himegoto.altchipgroup.internal.*
 
 class AltChipGroup(context: Context,
@@ -74,7 +75,8 @@ class AltChipGroup(context: Context,
     constructor(context: Context): this(context, null, 0, 0)
 
     init {
-        loadAttributes(context, attrs, defStyleAttr, defStyleRes)
+        if (attrs != null) loadAttributes(context, attrs, defStyleAttr, defStyleRes)
+        if (isInEditMode) setSampleDataForEditMode()
     }
 
     fun holders(): List<ChipHolder> = chipHolders
@@ -147,7 +149,6 @@ class AltChipGroup(context: Context,
         }
     }
 
-
     internal fun addViewInLayoutInternal(view: View, index: Int, params: LayoutParams, preventRequestLayout: Boolean) =
             addViewInLayout(view, index, params, preventRequestLayout)
 
@@ -165,11 +166,28 @@ class AltChipGroup(context: Context,
     }
 
     private fun loadAttributes(
-            context: Context,
-            attrs: AttributeSet?,
-            @AttrRes defStyleAttr: Int,
-            @StyleRes defStyleRes: Int) {
+            context: Context, attrs: AttributeSet,
+            @AttrRes defStyleAttr: Int, @StyleRes defStyleRes: Int) {
+        val a = context.theme.obtainStyledAttributes(
+                attrs, R.styleable.AltChipGroup, defStyleAttr, defStyleRes)
+        layoutWithinBounds = a.getBoolean(R.styleable.AltChipGroup_layoutWithinBounds, layoutWithinBounds)
+        maxLines = a.getInteger(R.styleable.AltChipGroup_maxLines, maxLines)
+        horizontalGap = a.getDimensionPixelSize(R.styleable.AltChipGroup_horizontalGap, horizontalGap)
+        verticalGap = a.getDimensionPixelSize(R.styleable.AltChipGroup_verticalGap, verticalGap)
+        restCountBadgeMarginStart = a.getDimensionPixelSize(R.styleable.AltChipGroup_restCountBadgeMarginStart, restCountBadgeMarginStart)
+        chipsMarginStart = a.getDimensionPixelSize(R.styleable.AltChipGroup_chipsMarginStart, chipsMarginStart)
+        chipsMarginEnd = a.getDimensionPixelSize(R.styleable.AltChipGroup_chipsMarginEnd, chipsMarginEnd)
+        chipsMarginTop = a.getDimensionPixelSize(R.styleable.AltChipGroup_chipsMarginTop, chipsMarginTop)
+        chipsMarginBottom = a.getDimensionPixelSize(R.styleable.AltChipGroup_chipsMarginBottom, chipsMarginBottom)
+        a.recycle()
+    }
 
+    private fun setSampleDataForEditMode() {
+        val holders = mutableListOf<ChipHolder>()
+        context.resources.getStringArray(R.array.sample_chip_labels).forEach {
+            holders.add(ChipHolder(it))
+        }
+        setChipHolders(holders)
     }
 
     interface OnChipClickListener {
