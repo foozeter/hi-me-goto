@@ -26,6 +26,7 @@ internal class CrammingLayoutMethod: LayoutMethod {
         restChips.clear()
         this.layout = null
         this.measure = null
+        this.outBounds = null
     }
 
     private fun layout() {
