@@ -38,6 +38,9 @@ class HomeActivity : AppCompatActivity() {
         chipGroup.setChipHolders(holders[0])
         chipGroup.maxLines = 2
         chipGroup.layoutWithinBounds = true
+        chipGroup.setOnChipClickListener { chip, holder, position ->
+            Log.d("mylog", "chip was clicked! (position = $position, label = ${holder.label})")
+        }
 
         var index = 1
         button.setOnClickListener {

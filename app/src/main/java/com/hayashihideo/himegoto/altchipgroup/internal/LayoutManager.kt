@@ -86,7 +86,7 @@ internal class LayoutManager(private val owner: AltChipGroup) {
         val chipHeight = owner.chipMeasure.height()
 
         // chipMeasure the max maxWidth of the badge temporarily
-        setRestCount(owner.chipCount())
+        setRestCount(owner.holders().size)
         badge.measure(
                 MeasureSpec.makeMeasureSpec(maxLayoutWidth, MeasureSpec.AT_MOST),
                 MeasureSpec.makeMeasureSpec(chipHeight, MeasureSpec.EXACTLY))

@@ -4,13 +4,11 @@ import android.content.Context
 import android.graphics.Point
 import android.support.annotation.AttrRes
 import android.support.annotation.StyleRes
+import android.support.design.chip.Chip
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import com.hayashihideo.himegoto.altchipgroup.internal.ChipStore
-import com.hayashihideo.himegoto.altchipgroup.internal.ChipMeasure
-import com.hayashihideo.himegoto.altchipgroup.internal.LayoutManager
-import com.hayashihideo.himegoto.altchipgroup.internal.SharedChipPool
+import com.hayashihideo.himegoto.altchipgroup.internal.*
 
 class AltChipGroup(context: Context,
        attrs: AttributeSet?,
@@ -64,6 +62,7 @@ class AltChipGroup(context: Context,
 
     internal var chipMeasure = ChipMeasure(context, ChipFactory())
     internal val viewStore = ChipStore(this, SharedChipPool(context, ChipFactory()))
+    internal val clickEventManager = ClickEventManager(viewStore)
 
     constructor(context: Context,
                 attrs: AttributeSet?,
@@ -78,11 +77,27 @@ class AltChipGroup(context: Context,
         loadAttributes(context, attrs, defStyleAttr, defStyleRes)
     }
 
-    private fun loadAttributes(
-            context: Context,
-            attrs: AttributeSet?,
-            @AttrRes defStyleAttr: Int,
-            @StyleRes defStyleRes: Int) {}
+    fun holders(): List<ChipHolder> = chipHolders
+
+    fun setChipHolders(holders: List<ChipHolder>) {
+        chipHolders.clear()
+        chipHolders.addAll(holders)
+        requestLayout()
+    }
+
+    fun setOnChipClickListener(listener: (chip: Chip, holder: ChipHolder, position: Int) -> Unit) {
+        clickEventManager.clickListener = object: View.OnClickListener {
+            override fun onClick(view: View) {
+                view as Chip
+                val position = viewStore.getPositionForChip(view)
+                listener(view, viewStore.getHolderForPosition(position), position)
+            }
+        }
+    }
+
+    fun removeOnChipClickListener() {
+        clickEventManager.clickListener = null
+    }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         if (changed || layoutRequested) {
@@ -108,6 +123,15 @@ class AltChipGroup(context: Context,
         }
     }
 
+    override fun requestLayout() {
+        if (!layoutIsFrozen) {
+            measureCached = false
+            layoutRequested = true
+            super.requestLayout()
+        }
+    }
+
+
     internal fun addViewInLayoutInternal(view: View, index: Int, params: LayoutParams, preventRequestLayout: Boolean) =
             addViewInLayout(view, index, params, preventRequestLayout)
 
@@ -119,26 +143,16 @@ class AltChipGroup(context: Context,
         layoutIsFrozen = false
     }
 
-    override fun requestLayout() {
-        if (!layoutIsFrozen) {
-            measureCached = false
-            layoutRequested = true
-            super.requestLayout()
-        }
-    }
-
-    fun chipCount() = chipHolders.size
-
-    fun holders(): List<ChipHolder> = chipHolders
-
-    fun setChipHolders(holders: List<ChipHolder>) {
-        chipHolders.clear()
-        chipHolders.addAll(holders)
-        requestLayout()
-    }
-
     internal fun setShared(pool: SharedChipPool, measure: ChipMeasure) {
         chipMeasure = measure
         viewStore.setShared(pool)
+    }
+
+    private fun loadAttributes(
+            context: Context,
+            attrs: AttributeSet?,
+            @AttrRes defStyleAttr: Int,
+            @StyleRes defStyleRes: Int) {
+
     }
 }

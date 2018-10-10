@@ -1,10 +1,7 @@
 package com.hayashihideo.himegoto.altchipgroup.internal
 
 import android.support.design.chip.Chip
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
-import com.hayashihideo.himegoto.R
 import com.hayashihideo.himegoto.altchipgroup.AltChipGroup
 import com.hayashihideo.himegoto.altchipgroup.ChipHolder
 import com.hayashihideo.himegoto.altchipgroup.internal.tools.*
@@ -55,6 +52,13 @@ internal class ChipStore(private val owner: AltChipGroup,
 
     fun getHolderForPosition(position: Int): ChipHolder = dirtyChips[position].holder
 
+    fun getPositionForChip(chip: Chip): Int = dirtyChips.indexOfFirst { it.chip == chip }
+
+    fun forAllChips(action: (chip: Chip) -> Unit) {
+        dirtyChips.forEach { action(it.chip) }
+        scrappedChips.forEach { action(it.chip) }
+    }
+
     fun setShared(shared: SharedChipPool) {
         this.shared.unregister(this)
         shared.register(this)
@@ -70,7 +74,7 @@ internal class ChipStore(private val owner: AltChipGroup,
                     val holder = roughLayout.getChipHolderForPosition(pos)
                     var pair = scrappedChips.popLastOrNull()
                     if (pair == null) {
-                        val chip = shared.obtainCleanChip()
+                        val chip = obtainCleanChipFromSharedPool()
                         owner.addViewInLayoutInternal(chip, -1, chip.layoutParams, preventRequestLayout = true)
                         pair = MutablePair(holder, chip)
                     } else {
@@ -104,7 +108,14 @@ internal class ChipStore(private val owner: AltChipGroup,
 
     private fun cleanChip(chip: Chip): Chip {
         chip.parent ?: return chip
-        owner.removeViewInLayout(chip)
+        owner.ignoreLayoutRequestDuring { owner.removeView(chip) }
+        owner.clickEventManager.removeAllListeners(chip)
+        return chip
+    }
+
+    private fun obtainCleanChipFromSharedPool(): Chip {
+        val chip = shared.obtainCleanChip()
+        owner.clickEventManager.setAllListeners(chip)
         return chip
     }
 
